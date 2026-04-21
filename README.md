@@ -14,12 +14,21 @@ A TechCrunch news collection and AI analysis skill for OpenClaw.
 
 ```bash
 # Clone or download this skill to your OpenClaw workspace
+
+# Linux/Mac
 cd ~/.openclaw/workspace/skills
+
+# Windows
+cd C:\Users\你的用户名\.openclaw\workspace\skills
+
 # Download from GitHub or copy files manually
+git clone https://github.com/tleavesolivia/openclaw-skill-techcrunch.git tech-news
+
+# Or manually: Download ZIP from GitHub → extract to skills/tech-news/
 
 # Install dependency
+cd tech-news
 npm install better-sqlite3
-```
 
 ## File Structure
 
