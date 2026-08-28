@@ -1,163 +1,104 @@
 /**
- * TechCrunch News Query Script
- * Search, filter, and summarize articles
+ * TechCrunch Query Script (Cloud Version)
+ * Fetches data from cloud API instead of local database
  */
 
-const fs = require('fs');
-const path = require('path');
+const https = require('https');
+const http = require('http');
 
-// Try to load better-sqlite3
-let Database;
-try {
-  Database = require('better-sqlite3');
-} catch (e) {
-  console.log('Warning: better-sqlite3 not available, using JSON storage');
-}
+// Point this at your own API server, or set the CLOUD_API_BASE env var
+const API_BASE = process.env.CLOUD_API_BASE || 'http://YOUR_API_SERVER:3000';
 
-const DB_PATH = path.join(__dirname, '../data/tech-news.db');
-const JSON_PATH = path.join(__dirname, '../data/tech-news.json');
-
-// Get articles from database
-function getArticles(options = {}) {
-  const { hours, keyword, category, limit } = options;
-  
-  if (Database && fs.existsSync(DB_PATH)) {
-    const db = new Database(DB_PATH);
-    
-    let query = 'SELECT * FROM tech_news WHERE 1=1';
-    const params = [];
-    
-    if (hours) {
-      const cutoff = new Date(Date.now() - hours * 3600000).toISOString();
-      query += ' AND pub_date >= ?';
-      params.push(cutoff);
-    }
-    
-    if (keyword) {
-      query += ' AND (title LIKE ? OR description LIKE ?)';
-      params.push(`%${keyword}%`, `%${keyword}%`);
-    }
-    
-    if (category) {
-      query += ' AND categories LIKE ?';
-      params.push(`%${category}%`);
-    }
-    
-    query += ' ORDER BY pub_date DESC';
-    
-    if (limit) {
-      query += ' LIMIT ?';
-      params.push(limit);
-    }
-    
-    const articles = db.prepare(query).all(...params);
-    db.close();
-    return articles;
-  } else if (fs.existsSync(JSON_PATH)) {
-    const data = JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
-    let articles = data.articles;
-    
-    if (hours) {
-      const cutoff = new Date(Date.now() - hours * 3600000);
-      articles = articles.filter(a => new Date(a.pub_date) >= cutoff);
-    }
-    
-    if (keyword) {
-      const kw = keyword.toLowerCase();
-      articles = articles.filter(a => 
-        a.title.toLowerCase().includes(kw) || 
-        a.description.toLowerCase().includes(kw)
-      );
-    }
-    
-    if (category) {
-      articles = articles.filter(a => a.categories.toLowerCase().includes(category.toLowerCase()));
-    }
-    
-    articles.sort((a, b) => new Date(b.pub_date) - new Date(a.pub_date));
-    
-    if (limit) {
-      articles = articles.slice(0, limit);
-    }
-    
-    return articles;
+// Fetch from cloud API
+async function fetchFromCloud(endpoint, params = {}) {
+  const url = new URL(`${API_BASE}${endpoint}`);
+  for (const [key, value] of Object.entries(params)) {
+    url.searchParams.append(key, value);
   }
   
-  return [];
+  return new Promise((resolve, reject) => {
+    const client = url.protocol === 'https:' ? https : http;
+    client.get(url.toString(), (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (e) {
+          reject(e);
+        }
+      });
+      res.on('error', reject);
+    }).on('error', reject);
+  });
+}
+
+// Get articles from cloud
+async function getArticles(options = {}) {
+  const { hours, keyword, limit } = options;
+  
+  const params = {};
+  if (hours) params.hours = hours;
+  if (keyword) params.keyword = keyword;
+  if (limit) params.limit = limit;
+  
+  try {
+    const result = await fetchFromCloud('/api/techcrunch', params);
+    return result.articles || [];
+  } catch (err) {
+    console.error(`Error fetching from cloud: ${err.message}`);
+    return [];
+  }
 }
 
 // Format article for display
 function formatArticle(article, index) {
-  const date = new Date(article.pub_date).toLocaleString('en-US', {
+  const date = new Date(article.pub_date).toLocaleString('zh-CN', {
     dateStyle: 'short',
     timeStyle: 'short'
   });
   
   return `${index + 1}. **${article.title}**
-   - Author: ${article.author || 'N/A'}
-   - Date: ${date}
-   - Categories: ${article.categories}
-   - Link: ${article.link}
-   - Summary: ${article.description || 'N/A'}
+   - ä½œè€…: ${article.author || 'N/A'}
+   - æ—¶é—´: ${date}
+   - åˆ†ç±»: ${article.categories || 'N/A'}
+   - é“¾æŽ¥: ${article.link}
+   - æ‘˜è¦: ${article.description || 'N/A'}
 `;
 }
 
 // Main query function
-function query(options) {
-  const articles = getArticles(options);
+async function query(options) {
+  const articles = await getArticles(options);
   
   if (articles.length === 0) {
-    console.log('No articles found.');
+    console.log('æœªæ‰¾åˆ°ç›¸å…³æ–‡ç« ã€‚');
     return;
   }
   
-  console.log(`\n=== TechCrunch Articles (${articles.length} found) ===\n`);
+  console.log(`\n=== TechCrunch æ–‡ç«  (${articles.length} æ¡) ===\n`);
   
-  for (const article of articles) {
-    console.log(formatArticle(article, articles.indexOf(article)));
+  for (let i = 0; i < Math.min(articles.length, 20); i++) {
+    console.log(formatArticle(articles[i], i));
+  }
+  
+  if (articles.length > 20) {
+    console.log(`... è¿˜æœ‰ ${articles.length - 20} æ¡æ–‡ç« æœªæ˜¾ç¤º`);
   }
   
   // Output JSON for AI processing if requested
   if (options.json) {
     console.log('\n=== JSON Output ===');
-    console.log(JSON.stringify(articles, null, 2));
-  }
-}
-
-// Generate summary for AI
-function generateSummary(hours = 24) {
-  const articles = getArticles({ hours, limit: 50 });
-  
-  if (articles.length === 0) {
-    console.log('No articles in the specified time range.');
-    return;
-  }
-  
-  // Group by category
-  const byCategory = {};
-  for (const article of articles) {
-    const cats = article.categories.split(',');
-    for (const cat of cats) {
-      if (!byCategory[cat]) byCategory[cat] = [];
-      byCategory[cat].push(article);
-    }
-  }
-  
-  // Output structured data for AI to summarize
-  const summaryData = {
-    timeRange: `Last ${hours} hours`,
-    totalArticles: articles.length,
-    categories: Object.keys(byCategory).sort((a, b) => byCategory[b].length - byCategory[a].length).slice(0, 10),
-    articles: articles.map(a => ({
+    const jsonOutput = articles.slice(0, 50).map(a => ({
       title: a.title,
       author: a.author,
       date: a.pub_date,
-      categories: a.categories.split(','),
-      summary: a.description
-    }))
-  };
-  
-  console.log(JSON.stringify(summaryData, null, 2));
+      categories: a.categories,
+      link: a.link,
+      description: a.description
+    }));
+    console.log(JSON.stringify(jsonOutput, null, 2));
+  }
 }
 
 // CLI
@@ -171,21 +112,12 @@ for (let i = 0; i < args.length; i++) {
   } else if (args[i] === '--keyword' && args[i + 1]) {
     options.keyword = args[i + 1];
     i++;
-  } else if (args[i] === '--category' && args[i + 1]) {
-    options.category = args[i + 1];
-    i++;
   } else if (args[i] === '--limit' && args[i + 1]) {
     options.limit = parseInt(args[i + 1]);
     i++;
   } else if (args[i] === '--json') {
     options.json = true;
-  } else if (args[i] === '--summary') {
-    options.summary = true;
   }
 }
 
-if (options.summary) {
-  generateSummary(options.hours || 24);
-} else {
-  query(options);
-}
+query(options);

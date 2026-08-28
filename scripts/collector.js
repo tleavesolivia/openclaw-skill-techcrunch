@@ -25,7 +25,7 @@ const FEEDS = [
   { name: 'Fundraising', url: 'https://techcrunch.com/category/fundraising/feed/' }
 ];
 
-const POLL_INTERVAL = 30 * 60 * 1000; // 30 minutes
+const POLL_INTERVAL = 60 * 60 * 1000; // 60 minutes
 
 // Stats tracking
 let stats = {
@@ -283,9 +283,7 @@ if (args.includes('--test') || args.includes('--once')) {
   runOnce();
 } else if (args.includes('--stats')) {
   showStats();
-} else if (args.includes('--daemon')) {
-  runDaemon();
 } else {
-  // Default: run once
-  runOnce();
+  // Default: run as daemon
+  runDaemon();
 }

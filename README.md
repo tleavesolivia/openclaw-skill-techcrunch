@@ -29,6 +29,7 @@ git clone https://github.com/tleavesolivia/openclaw-skill-techcrunch.git tech-ne
 # Install dependency
 cd tech-news
 npm install better-sqlite3
+```
 
 ## File Structure
 
@@ -104,8 +105,8 @@ openclaw cron add \
 ### Funding Rounds (Bullet Points)
 
 ```
-- Cursor: $2B+ @ $50B (rumored); AI coding tool, enterprise surge; invested by a16z and Thrive
-- Factory: $150M @ $1.5B; AI coding for enterprise; invested by Khosla Ventures
+- Cursor: $2B+ raised @ $50B valuation (rumored); AI coding tool, enterprise surge; invested by a16z and Thrive
+- Factory: $150M raised @ $1.5B valuation; AI coding for enterprise; invested by Khosla Ventures
 ```
 
 ## License
