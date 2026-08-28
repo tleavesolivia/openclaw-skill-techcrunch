@@ -3,7 +3,7 @@ name: tech-news
 description: |
   TechCrunch news collection and AI analysis skill. Fetches articles from TechCrunch RSS feeds.
   Subscribed categories: AI, Startups, Venture, Fundraising.
-  Triggers: "tech news summary", "TechCrunch AI news", "startup news", "venture capital news", "fundraising rounds", "è¿‡åŽ»Xå°æ—¶ç§‘æŠ€æ–°é—»".
+  Triggers: "tech news summary", "TechCrunch AI news", "startup news", "venture capital news", "fundraising rounds".
 ---
 
 # Tech_News Skill
@@ -79,8 +79,7 @@ See [scripts/collector.js](scripts/collector.js)
 
 ## Output Language
 
-Default: English (TechCrunch articles are in English)
-User can request Chinese summary: "è¿‡åŽ»24å°æ—¶ç§‘æŠ€æ–°é—»æ€»ç»“" â†’ Chinese output
+Default: English 
 
 ## Output Format Preferences
 
