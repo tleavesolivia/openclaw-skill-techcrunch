@@ -26,22 +26,22 @@ See [references/feeds.md](references/feeds.md) for full feed list.
 Same as jin10 skill:
 
 ```
-â”‚ åŸºç¡€å±‚ï¼ˆåŽŸå­æ“ä½œï¼‰
-â”‚ â”œâ”€ RSS Fetch â€” è½®è¯¢ RSS feedï¼Œè§£æž XML
-â”‚ â”œâ”€ Dedup â€” ç”¨ guid åŽ»é‡ï¼Œé¿å…é‡å¤å…¥åº“
-â”‚ â””â”€ Store â€” SQLite æ•°æ®åº“æŒä¹…åŒ–
-â”‚
-â”‚ åŠŸèƒ½å±‚ï¼ˆå•ä¸€èƒ½åŠ›ï¼‰
-â”‚ â”œâ”€ Search â€” å…³é”®è¯/åˆ†ç±»æœç´¢
-â”‚ â”œâ”€ Summarize â€” æ—¶é—´çº¿å™äº‹æ€»ç»“
-â”‚ â”œâ”€ Health Check â€” é‡‡é›†çŠ¶æ€æ£€æŸ¥
-â”‚ â””â”€ Stats â€” æ•°æ®ç»Ÿè®¡
-â”‚
-â”‚ åº”ç”¨å±‚ï¼ˆåŠŸèƒ½å±‚çš„ç»„åˆ + è‡ªåŠ¨åŒ–ï¼‰
-â”‚ â”œâ”€ äº‹ä»¶è¿½è¸ª = æœç´¢ + æ€»ç»“
-â”‚ â”œâ”€ å…³é”®è¯å‘Šè­¦ = æœç´¢ + æŽ¨é€
-â”‚ â”œâ”€ å®šæ—¶æŽ¨é€ = æ€»ç»“ + cron
-â”‚ â””â”€ çƒ­è¯ç»Ÿè®¡ = æœç´¢ + èšåˆ
+│ Base layer (atomic operations)
+│ ├─ RSS Fetch — poll RSS feed, parse XML
+│ ├─ Dedup — deduplicate by guid, prevent duplicate entries
+│ └─ Store — persist to SQLite database
+│
+│ Feature layer (single capabilities)
+│ ├─ Search — keyword / category search
+│ ├─ Summarize — timeline narrative summary
+│ ├─ Health Check — collector status check
+│ └─ Stats — data statistics
+│
+│ Application layer (feature composition + automation)
+│ ├─ Event tracking = Search + Summarize
+│ ├─ Keyword alert = Search + Push
+│ ├─ Scheduled push = Summarize + cron
+│ └─ Hot-topic stats = Search + Aggregate
 ```
 
 ## Database Schema
@@ -67,9 +67,8 @@ See [scripts/collector.js](scripts/collector.js)
 
 ## Query Script
 
-**æœ¬åœ°ç‰ˆæœ¬**: [scripts/query-local.js](scripts/query-local.js) â€” ç›´æŽ¥è¯»å–æœ¬åœ° SQLite æ•°æ®åº“
-
-**äº‘ç«¯ç‰ˆæœ¬**: [scripts/query.js](scripts/query.js) â€” è°ƒç”¨äº‘ç«¯ APIï¼ˆå½“å‰äº‘ç«¯æœåŠ¡æš‚åœï¼Œå»ºè®®ä½¿ç”¨æœ¬åœ°ç‰ˆæœ¬ï¼‰
+**Local version**: scripts/query-local.js — reads the local SQLite database directly
+**Cloud version**: scripts/query.js — calls the cloud API (currently suspended; we recommend using the local version)
 
 **Search modes:**
 - `--hours N` â€” Articles from last N hours
