@@ -1,4 +1,4 @@
-# OpenClaw TechCrunch Skill
+# TechCrunch Skill
 
 A TechCrunch news collection and AI analysis skill for OpenClaw.
 
