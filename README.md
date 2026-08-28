@@ -4,11 +4,11 @@ A TechCrunch news collection and AI analysis skill for OpenClaw.
 
 ## Features
 
-- **RSS Feed Collection** — Fetches articles from official TechCrunch RSS feeds
-- **SQLite Storage** — Persistent database with deduplication
-- **AI Summarization** — Generate time-based news briefings
-- **Multi-category Support** — AI, Startups, Venture, Fundraising
-- **Cron Integration** — Daily automated briefings
+- **RSS Feed Collection** â€” Fetches articles from official TechCrunch RSS feeds
+- **SQLite Storage** â€” Persistent database with deduplication
+- **AI Summarization** â€” Generate time-based news briefings
+- **Multi-category Support** â€” AI, Startups, Venture, Fundraising
+- **Cron Integration** â€” Daily automated briefings
 
 ## Installation
 
@@ -22,9 +22,9 @@ cd ~/.openclaw/workspace/skills
 cd C:\Users\your user name\.openclaw\workspace\skills
 
 # Download from GitHub or copy files manually
-git clone https://github.com/tleavesolivia/openclaw-skill-techcrunch.git tech-news
+git clone https://github.com/tleavesolivia/techcrunch-skill.git tech-news
 
-# Or manually: Download ZIP from GitHub → extract to skills/tech-news/
+# Or manually: Download ZIP from GitHub â†’ extract to skills/tech-news/
 
 # Install dependency
 cd tech-news
@@ -35,13 +35,13 @@ npm install better-sqlite3
 
 ```
 tech-news/
-├── SKILL.md              # Skill definition and architecture
-├── README.md             # This file
-├── scripts/
-│   ├── collector.js      # RSS collector (polls every 30 min)
-│   └── query.js          # Search and query script
-└── references/
-    └── feeds.md          # RSS feed URLs and categories
+â”œâ”€â”€ SKILL.md              # Skill definition and architecture
+â”œâ”€â”€ README.md             # This file
+â”œâ”€â”€ scripts/
+â”‚   â”œâ”€â”€ collector.js      # RSS collector (polls every 30 min)
+â”‚   â””â”€â”€ query.js          # Search and query script
+â””â”€â”€ references/
+    â””â”€â”€ feeds.md          # RSS feed URLs and categories
 ```
 
 ## Usage
@@ -75,9 +75,9 @@ node scripts/query.js --hours 24 --json
 ### OpenClaw Integration
 
 In OpenClaw chat:
-- "过去24小时AI新闻总结" — Chinese summary
-- "TechCrunch AI news summary" — English summary
-- "Search TechCrunch for X" — Keyword search
+- "è¿‡åŽ»24å°æ—¶AIæ–°é—»æ€»ç»“" â€” Chinese summary
+- "TechCrunch AI news summary" â€” English summary
+- "Search TechCrunch for X" â€” Keyword search
 
 ## RSS Feeds
 
