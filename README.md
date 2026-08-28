@@ -19,7 +19,7 @@ A TechCrunch news collection and AI analysis skill for OpenClaw.
 cd ~/.openclaw/workspace/skills
 
 # Windows
-cd C:\Users\你的用户名\.openclaw\workspace\skills
+cd C:\Users\your user name\.openclaw\workspace\skills
 
 # Download from GitHub or copy files manually
 git clone https://github.com/tleavesolivia/openclaw-skill-techcrunch.git tech-news
